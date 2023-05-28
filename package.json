@@ -1,0 +1,25 @@
+{
+  "name": "webpack-basics",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "scripts": {
+    "build": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ankitshaji/webpack-basics.git"
+  },
+  "keywords": [],
+  "author": "Ankit Shaji <ankitshaji@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ankitshaji/webpack-basics/issues"
+  },
+  "homepage": "https://github.com/ankitshaji/webpack-basics#readme",
+  "devDependencies": {
+    "webpack": "^5.84.1",
+    "webpack-cli": "^5.1.1"
+  }
+}
