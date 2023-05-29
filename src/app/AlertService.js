@@ -1,7 +1,9 @@
-//user-created clientside js webApi library - js script file
+//user-created clientside js AlertServiceWebApi library - js module file
+
+import inputsAreValidFunctionObject from "./utils/inputs-are-valid"; //functionObeject //user-created clientside js inputs-are-validWebApi library - js module file
 
 //declaring AlertServiceClass blueprint/template
-class AlertService {
+export default class AlertService {
   //creating an instance variable
   errorBoxHTMLDivElementInstObj;
 

@@ -1,7 +1,7 @@
-//user-created clientside js webApi library - js script file
+//user-created clientside js parse-inputsWebApi library - js module file
 
 //returns numberInstObjArrayInstObj
-const parseInputsFunctionObject = (inputsAnyInstObjArrayInstObj) => {
+export default (inputsAnyInstObjArrayInstObj) => {
   return inputsAnyInstObjArrayInstObj.map((strAnyInstObj) =>
     parseInt(strAnyInstObj)
   );

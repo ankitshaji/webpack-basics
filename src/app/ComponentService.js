@@ -1,7 +1,7 @@
-//user-created clientside js webApi library - js script file
+//user-created clientside js ComponentServiceWebApi library - js module file
 
 //declaring ComponentServiceClass blueprint/template
-class ComponentService {
+export default class ComponentService {
   //creating instance variables
   numberOneHTMLInputElementInstObj;
   numberTwoHTMLInputElementInstObj;

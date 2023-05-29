@@ -1,10 +1,10 @@
-//user-created clientside js webApi library - js script file
+//user-created clientside js appWebApi library - js module file
 
-const alertServiceInstObj = new AlertService();
-const componentServiceInstObj = new ComponentService();
+import parseInputsFunctionObject from "./utils/parse-inputs"; //functionObeject //user-created clientside js parse-inputsWebApi library - js module file
+import inputsAreValidFunctionObject from "./utils/inputs-are-valid"; //functionObeject //user-created clientside js inputs-are-validWebApi library - js module file
 
 //returns void/undefined
-const runFunctionObject = (alertServiceInstObj, componentServiceInstObj) => {
+export default (alertServiceInstObj, componentServiceInstObj) => {
   alertServiceInstObj.hideError();
 
   componentServiceInstObj.onClick(() => {
@@ -30,6 +30,3 @@ const runFunctionObject = (alertServiceInstObj, componentServiceInstObj) => {
     }
   });
 };
-
-///runFunctionObject execution
-runFunctionObject(alertServiceInstObj, componentServiceInstObj);
