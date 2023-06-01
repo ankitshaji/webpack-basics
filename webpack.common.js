@@ -3,9 +3,6 @@
 const path = require("path"); //pathLiteralJsObject //built-in serverside js pathWebApi library/non global core module
 
 module.exports = {
+  //default mode: "production"
   entry: "./src/index.js",
-  output: {
-    filename: "main.js",
-    path: path.resolve(__dirname, "dist"),
-  },
 };

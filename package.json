@@ -4,7 +4,7 @@
   "private": true,
   "description": "",
   "scripts": {
-    "build": "webpack --config webpack.config.js",
+    "build": "webpack --config webpack.prod.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,6 +21,7 @@
   "devDependencies": {
     "lodash": "^4.17.21",
     "webpack": "^5.84.1",
-    "webpack-cli": "^5.1.1"
+    "webpack-cli": "^5.1.1",
+    "webpack-merge": "^5.9.0"
   }
 }
