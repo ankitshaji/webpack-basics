@@ -13,6 +13,7 @@ module.exports = merge(common, {
   output: {
     filename: "[name].bundle.js",
     path: path.resolve(__dirname, "dist"),
+    assetModuleFilename: "images/[name][ext]",
   },
   plugins: [new HtmlWebpackPlugin({ template: "./src/template.html" })],
 });

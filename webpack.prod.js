@@ -13,6 +13,7 @@ module.exports = merge(common, {
   output: {
     filename: "[name].[contenthash].bundle.js",
     path: path.resolve(__dirname, "dist"),
+    assetModuleFilename: "images/[name].[hash][ext]",
     //new alternative instead of using clean-webpack-plugin plugin
     //clean: true,
   },
