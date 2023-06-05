@@ -50,6 +50,14 @@ module.exports = merge(common, {
           "css-loader", //converts css to js
         ],
       },
+      {
+        test: /\.scss$/,
+        use: [
+          MiniCssExtractPlugin.loader, //converts js to css
+          "css-loader", //converts css to js
+          "sass-loader", //converts css to scss
+        ],
+      },
     ],
   },
 });

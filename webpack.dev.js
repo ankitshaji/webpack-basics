@@ -21,8 +21,16 @@ module.exports = merge(common, {
       {
         test: /\.css$/,
         use: [
-          "style-loader", //convert js to css and inject style tags with that css into index.html (ie DOM)
+          "style-loader", //converts js to css and inject style tags with that css into index.html (ie DOM)
           "css-loader", //converts css to js
+        ],
+      },
+      {
+        test: /\.scss$/,
+        use: [
+          "style-loader", //converts js to css and injects style tags with that css into index.html (ie DOM)
+          "css-loader", //converts css to js
+          "sass-loader", //converts css to scss
         ],
       },
     ],
