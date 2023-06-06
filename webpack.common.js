@@ -4,7 +4,10 @@ const path = require("path"); //pathLiteralJsObject //built-in serverside js pat
 
 module.exports = {
   //default mode: "production"
-  entry: "./src/index.js",
+  entry: {
+    main: "./src/index.js",
+    //style: "./src/style.scss" ,
+  },
   module: {
     rules: [
       { test: /\.html$/, use: ["html-loader"] },

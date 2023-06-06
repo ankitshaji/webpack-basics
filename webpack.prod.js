@@ -36,9 +36,22 @@ module.exports = merge(common, {
       //new OptimizeCssAssetsWebpackPlugin(),
       new CssMinimizerWebpackPlugin(),
     ],
+    splitChunks: {
+      cacheGroups: {
+        style: {
+          name: "style",
+          test: /style\.scss$/,
+          chunks: "all",
+          enforce: true,
+        },
+      },
+    },
   },
   plugins: [
-    new MiniCssExtractPlugin({ filename: "[name].[contenthash].bundle.css" }), //create minified bundled css file
+    new MiniCssExtractPlugin({
+      filename: "[name].[contenthash].bundle.css",
+      chunkFilename: "[name].[contenthash].bundle.css",
+    }), //create minified bundled css file
     new CleanWebpackPlugin(),
   ],
   module: {

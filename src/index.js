@@ -8,6 +8,7 @@ import AlertService from "./app/AlertService"; //Class //user-created clientside
 import ComponentService from "./app/ComponentService"; //Class //user-created clientside js ComponentServiceWebApi library - js module file
 import _ from "lodash"; //functionObject //thirdparty serverside js lodashWebApi library/module/npm package
 import "./style.scss"; //user-created clientside scss library (eg.style.scss file)
+//import(/* webpackChunkName: "style" */ "./style.scss"); //realAsync/dynamic importFakeFunctionObject execution //user-created clientside scss library (eg.style.scss file)
 import "./style.css"; //user-created clientside css library (eg.style.css file)
 
 const alertServiceInstObj = new AlertService();
