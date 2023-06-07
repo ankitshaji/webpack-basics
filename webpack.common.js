@@ -6,6 +6,7 @@ module.exports = {
   //default mode: "production"
   entry: {
     main: "./src/index.js",
+    vendor: "./src/vendor.js",
     //style: "./src/style.scss" ,
   },
   module: {
