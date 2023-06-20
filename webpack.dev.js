@@ -8,6 +8,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin"); //Class //thirdparty s
 module.exports = merge(common, {
   //dont minify [name].bundle.js script file (ie remove the default terser-webpack-plugin pugin in optimization->minimizer)
   mode: "development",
+  devtool: "inline-source-map",
   //remove "eval" devtool (ie. eval())
   //devtool: false,
   output: {

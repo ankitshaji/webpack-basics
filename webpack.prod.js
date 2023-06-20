@@ -13,6 +13,7 @@ const CssMinimizerWebpackPlugin = require("css-minimizer-webpack-plugin"); //Cla
 module.exports = merge(common, {
   //minify [name].[contenthash].bundle.js script file (ie dont remove the default terser-webpack-plugin plugin in optimization->minimizer)
   mode: "production",
+  devtool: "source-map",
   output: {
     filename: "[name].[contenthash].bundle.js",
     path: path.resolve(__dirname, "dist"),
