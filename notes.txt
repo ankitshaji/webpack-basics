@@ -1,0 +1,430 @@
+//Note - Every thirdparty serverside js webapi library/module/npm package mentioned below should be installed as a dev dependency (ie --save-dev).
+
+//why use webpack -
+//if we're inside our index.html file and we have a js module file inside a script tag
+//which import's multiple other js module file inside it (ie thirdparty/built-in/user-created serverside js webApi libraries/modules/npm pacakages and
+//in this case also user-created clientside js webApi libraries - js module files), that within themselves are doing the same thing,
+//all these js module files will need to be served by our server,
+//this means we are in a way adding multiple other script tag with those module js files in the correct order for everything to work as required.
+//The issue we solve with webpack is, the issue of having multiple (http structuerd) GET requests to our server.
+//Webpack solves this issue by bundling all the js module files in the right order into a single minified js script file,
+//thus allowing us to put that single minified js script file inside a script tag in our index.html instead,therefore
+//allowing us to only need a single (http structred) GET request to our server.
+//(ie user-created/thirdparty/built-in serverside js webApi libraries/modules/npm packages and user-created
+//clientside js webApi libraries - ie module js files, are bundled into a single minfied user-created clientside js webApi library - js script file.)
+
+//webpack setup-
+//we are required to install the thirdparty serverside js webpackWebApi library/module/npm package and the
+//thirdparty serverside js webpack-cliWebApi library/module/cli tool/npm package.
+//if we do not create a webpack.config.js file - js module file in the user-created serverside js projectRootWebApi library/modules/npm package,
+//the default webpack entry point set in its "entry" property/key is "./src/index.js"
+//We are therefore required to create a directory called src, which i see as a user-created clientside js srcWebApi library/module/npm pacakge,
+//and in it a index.js file.
+//The webpack entry point index.js - js module file (ie.app.js) is also the main file of the user-created clientside js srcWebapi library/module/npm package
+//with an implicit package.json file in it.it import's into it multiple built-in/thirdparty/user-created serverside js webapi libraries/modeles/npm packages
+//and in this case also user-created clientside js webApi libraries - ie module js files.
+//when we run the webpack cli command, it finds this webpack entry point index.js - js module file,
+//and bundle it and all the js module files it uses into a minified js script file,which is created and put into a newly created directory
+//called dist,where the bundled minified js script file's default name is main.js.
+//(note - it is weird to call the filename index instead of app but we need to do this to set it as the main file of the
+//user-created clientside/serverside js srcWebApi librairy/module/npm pacakge.)
+//Some key things we will see inside the bundled minified main.js js script file is the evalFunctionObject and more imporatantly
+//__webpack_require__FunctionObject("relative path to a file") which is the replacement for the ESModule syntax(ie import and from keywords).
+
+//package.json file of user-created serverside js projectRootWebApi library/module/(not)npm package  -
+//we set the "build" key/property in package.json file to be "webpack" and we can also provide a webpack config file - js module file next to it if one exists
+//which is usually the production version eg. "webpack --config webpack.prod.config.js",then run the "npm run build" command to run
+//the wepack command using that webpack config file - js module file.
+
+//file extentions in ESModule syntax when using webpack-
+//whether we have a js module file or a ts module file named index inside our src directory,that uses the ESModule syntax's
+//import and from keyword, we should not write the .js file exentions in it.
+//This is contradictory since using ESModule syntax usually always requires us to write the file extensions due to
+//it being treated like a script tags with a src attribute pointing to a js module file, and in the case
+//of ts module file we are forseeing the transpiled js module files and add in the file extension,
+//This is due a default setting in an arrayInstObj in the webpack config file - js module file of accepted file extension that controls which js module files webpack can finds,
+//where in the end webpack will removes and replaces all the ESModule syntax import and from keywords when creating the bundled minified main.js js script file.
+//This default setting arrayInstObj of accepted file extentions can be edited by going to the "resolve" property/key literalJsObject's "extensions" property/key.
+
+//webpack config file - js module file -
+//we can create a webpack config file - js module file called webpack.config.js to set the entry point/points,
+//the environment,add loaders,add plugins,determin the output location, create source map files etc.
+//Instead of using the default webpack config file - js module file where the default value for the "mode" property/key is "production"
+//we can create a common webpack config  file - js module file, called webpack.common.config.js which will be a parent file to 2
+//diffrent child webpack config files - js module files, one being the development webpack config file - js module file, called webpack.dev.js
+//and the other being the production webpack config file - js module file, called webpack.prod.js
+//and set respective "mode" property/key values in them (ie "development" and "production")
+//To be able to extend the child webpack prod and dev config file - js modules files with the parent
+//common webpack config file - js module file , we must first use module.requireMethodObject (ie commonjs syntax) to require in the literalJsObject that is
+//exproted with module.export in the webpack.common.config.js file - js module file
+//and require in the thirdparty serverside js webpack-mergeWebapi library/module/npm package into the
+//child webpack prod and dev config files - js modules files and edit some code to use it.
+//(Their diffrences are explained further below).
+
+//Adding a content hash in filename of the outputted minified bundled files -
+//When we are outputting diffrent types of bundled files we can choose to add a hash into the filename,
+//this hash is determined by the content inside the bundled file(ie it take the content and passes it into the md5 hashing function to
+//create the hash),therefore if the content does not change the hash does not change either.
+//eg. [name].[contenthash].bundle.js.
+//The [name] part in the filename can be auto generated as well with the default being main,
+//it can also be the name of the file used to create the bundled minified file or a name that we set explcitly for it.
+//Sometimes the [ext] part in the file can be auto generated as well from the file extension in the file
+//used to create the bundled minified file.
+//we can add a directory when writing the filename and it will create a sub directory in the ouputting dist directory which will be
+//reflected in the relative path used in the img tag,link tag,scrip tags etc that link to the created bundled minified files in
+//the created minfied bundled index.html file with the help of the html-webpack-plugin plugin (expanded on more in plugins section)
+//we can also change this have an absolute path prefix of some random directory we will need to set up by ourselves later,we do this by
+//going to the "outputs" property/keys literalJsbObject and adding in the "publiPath" propert/key and
+//adding in an absolute path prefix eg. publicPath: "/random" where random would be the directory we need to create to place
+//all our created bundled minfied files in.
+//This also makes (whatever) server/webApi/app that is serving the created bundled minfied files from whatever directory
+//to always use that prefixed absolute path to get to those created bundled minfied files.
+
+//purpose of a content hash  -
+//if we didnt use a content hash in the filename of the outputted minified bundled files,
+//and we server that bundled minified main.js - js script file and the browser sends a GET request and recives this file,
+//the browser will save this file in the browser cache, now if we edit our project and rebuild using webpack, creating a bundled minfied main.js - js script file
+//to serve on our server, since we didnt use a content hash in the filename it will have the same filename as before.
+//Now in our browser, if we refresh the page to see the updated bundled minfied main.js - js script file,the browser does not send another GET request to retrive the updated
+//bundled minifed main.js - js script file from the server , this is because the browser already finds a same named bundled minifed main.js - js script file
+//in the browser cache and uses that instead, but that would be the non
+//updated one which is bad.
+//This is why we use a content hash in the filename so each time we edit our project and rebuild using webpack ,
+//The bundled minifed [name].[contenthash].bundle.js - js script file served on our server would have a diffrent filename,
+//therefore in our browser, if we refresh the page to see the update bundled minified [name].[contenthash].bundle.js - js script file,
+//the browser will not find a same named bundled minified [name].[contenthash].bundled.js - js script file in the browser cache,
+//therefeore it will have to send another GET request and receive the file.(This is known as cache busting)
+//Using a content hash in the filename can clutter up the output directory (ie dist), therefore we need to add in
+//the clean-webpack-plugin plugin, which cleans the output directory (ie dist) for us on each rebuild using webpack.
+//(This is expanded on more in plugins section)
+//But the clean-webpack-plugin plugin is depreciated,the new alternative way to do this is to
+//add a "clean" property/key in the "output" property/key's literalJsObject and set it the value to booleanInstObj true.
+//Important related note -
+//If we personally created the index.html file instead of webpack outputting a bundled minfied index.html file,
+//then the script tag's src attribute wont be automatically update to the new bundled minifed [name].[contenthash].bundle.js - js script file
+//If webpack did ouput the bundled minified index.html file (using html-webpack-plugin plugin (expanded more in plugins section))
+//,then it will automatically add in a script tag,with a src attribute linkining to the new bundled minifed [name].[contenthash].bundle.js - js script file.
+//into it.
+
+//entry points in the common webpack config file - js module file -
+//If we only have a single entry point, we can set it directly as a stringInstObject with the relative path to it in the "entry"
+//property/key.(ie usually "./src/index.js").
+//when using the index.js - js module file as the entry point, the outputted bundled minified [name].[contenthash].bundled.js - js script file,
+//is defaulty named main if we wrote [name] in our "output" property/keys literalJsObject's "filename" property/key's stringInstObject ie "[name].[contenthash].bundled.js"
+//The code that in the the index.js - js module file is code that we keep changing since it is code that we wrote ,
+//but if we are using a lot of thirdparty serverside js webApi libraries/module/npm packages
+//that themselves have their own imports that we are not explcitly using in our index.js - js module file
+//eg. import "bootstrap" (ie side effect import) which imports @popper/core inside it (so we install them both as dev dependencies),
+//this is code that does not usually change a lot, so
+//we can create a second entry point called vendor.js and place all those imports in there instead,
+//this allows us to separate that code and create another nonchanging bundled minifed [name].[contenthash].bundled.js - js script file,
+//To do this we need to change "entry" property/key to be a literalJsObject and set 2 properties/keys in it, 1 called "main" to point to our original "./src/index.js" entry point,
+//and the other called "vendor" to point to the new "./src/vendor.js" entry point.
+//where the [name] is explicitly set and based on the name of the property's/key's we set in the "entry" property/key literalJsObject.
+//The main purpose of doing this is,since the content
+//of the bundled minified vendor js file - js script file doest not change, the contenthash dosnt change,
+//this means the browser is able to cache this file once in the browser cache and retrive it more quickly from it,
+//without needing to send another GET requrest to the (whatever) webAPi/server on each refresh.
+//we can also import user-created serverside/clientside js webApi libraries - js module files and built-in serverside js webApi libraries/modules/npm packages
+//if they have unchanging code and we dont need to explcitly use it in out index.js - js module file.
+//We will see another usage of the entry point in the plugin section under mini-css-extract-plugin plugin
+
+//webpack loaders -
+//These are thirdparty serverside js loaderWebApi libraries/modules/npm packages that we install that get
+//automatically used by creating a rule literalJsObject for each of them and placing them
+//as a value in the arrayInstObject of the key/property called "rules", which is in the literalJsObject of the property/key "module"
+//which is in the literalJsObject of the property/key "export",which is a property/key in the literalJsObject called "module"
+//inside a webpack config file - js module file.
+//These loaders allow webpack to deal with diffrent types of files it encounters when creating a bundled minified (sometimes with help of plugins) file.
+
+//loader examples -
+//Note - we are not required to add a loader for webpack to be able to deal with .js files - js module file, when creating single bundled minified main.js file - js script file.
+//1.ts-loader -
+//This is a rule for webpack to be able to deal with .ts files -ts module files,
+//it also transpliles the .ts files - ts module files to .js files - js modules files to be
+//able to create the single bundled minified main.js file - js script file.
+//In the rule literalJsObject, we need a property/key called "excludes" with a value of regex /node_modules/ to prevent webpack from transpiling those .ts files - ts module files
+//since their .js files - js module files can be found without doing so.
+//we are also require to go to a property/key called "resolve" in the "exports" literalJsObject that stores a literalJsObject
+//with a property/key called "extensions" that stores an arrayInstObject with stringInstObject values
+//of the file types that are allowed to be imported into the index.js/.ts file and without needing to write
+//the file extension at the end ,which also sets the order of
+//precedence of the imports,and add in the ".tsx" and ".ts" file extension.
+//The default values present are [".js", "".json", "".wasm"], therefore we overwrite it with
+//[".tsx",".ts",".js"] and if we want the the default value back we can just add in the value "..." ie [".tsx",".ts",".js","..."]
+//2.css-loader -
+//First we should import our .css file (user-created clientside css library(eg.style.css file)) into our index.js file - js module file,
+//thus webpack finds this .css file,This is the rule for webpack to be able to deal with files ending in .css,
+//it converts css to js and places it inside the single minified main.js file -js script file, but this is not enough,
+//we need to combine this in the same rule literalJsObj with other loaders,we have 2 options for the loader used,
+//we can add a loader called style-loader that
+//looks at the css inside the single minified main.js file - js script file and converts it back to normal css and inject a style tag with that css into the index.html file
+//when executing the minfied main.js file - js script filed linked inside it.
+//OR
+//we use a diffrent loader retrived through a static property called loader on a webpack
+//plugin Class called mini-css-extract-plugin (ie MiniCssExtractPlugin.loader)
+//This loader looks at the css in the single minified main.js file - js scipt file and
+//convert it back to normal css , then with the help of adding the plugin itself into the "plugins" property/key arrayInstObject
+//ie mini-css-extract-plugin (explained in plugins section), it creates and puts the normal css into a bundled normal setName.css file,
+//and with the help of htmp-webpack-plugin plugin ,adds a link tag linking to that newly created bundled normal .css file in the created index.html file
+//along with the script tag linking to that minified main.js file - js script file.(ie for it to be able to link to the created bundled normal .css file we need to be using webpack to create the index.html file)
+//The order to add in the loaders in the arrayInstObj is backwards ie [style-loader,css-loader].
+//we can add a plugin called optimize-css-assets-webpack-plugin to make the created bundled normal css file be a minified version. (This plugin is explained below)
+//but this plugin is depreciated in webpack 5 so we use the new alternative css-minimizer-extract-plugin plugin insteaed which does the same thing. (This plugin is also explained below)
+//3.scss-loader -
+//First we should import our .scss file(user-created clientside scss library(eg.style.scss file)) into our index.js file  - js module file
+//thus webpack finds this .scss fil ,This is the rule for webpack to be able to deal with files ending in .scss,
+//it converts scss to css, therefore we still need to include the loaders mentioned in no.2 in this rule's literalJsObject as well.
+//The scss-loader actually requires us to install another thirdparty serverside js node-sassWebApi libraary/module/npm package
+//but this is depreciated in webpack v5 and is replaced by thirdpart serverside js sassWebApi libraary/module/npm package which does the same thing.
+//The scss-loader can also take care of minfiying the created bundle normal .css file therefore here we dont need the optimize-css-assets-webpack-plugin plugin nor its predecessor
+//css-minimizer-extract-plugin plugin
+//In our project we installed the thirdparty serverside js bootstrapWebApi library/module/npm package, which contains its boostrap scss file
+//(ie thirdparty serverside scss bootstrap library (eg.style.scss file), and imported it into our style.scss file
+//(ie user-created clientside scss library (eg.stlye.scss file)) using  @import "bootstrap/scss/bootstrap".
+//4.html-loader -
+//First we need to import the .html file into our index.js module file,which is automatically done if we were already using the
+//html-webpack-plguin plugin (expanded on more in plugins section),This is the rule for webpack to be able to deal with
+//files ending in .html, if the .html file we imported into our index.js - js module file
+//had an img tags that points to an .svg or whatever file, it also gets imported into our index.js - js module file
+///it converts html markup to js and places it inside the created bundled minified main.js file - js script file.
+//Sidenote - Usually to convert the svg into javascript and place it inside the created bundled minified main.js file - js script file
+//and convert it back to normal svg from the js and create the normal svg file ,we use a file-loader loader or
+//write an explcit asset modules rule, but it seems the asset modules rule is added in implcitly as well in webpack v5
+//so we dont need to do anything extra at all.
+//5.file-loader -
+//if the .html file we required into our index.js file - js module file had an img tags that points to an .svg or whatever file,
+//it gets imported into our index.js - js module file,
+//Therefore we need this rule with this loader as well,This is the rule for webpack to be able to deal with files ending in .svg|.img etc,
+//it converts svg code to js and places it inside the created bundled minified main.js file - js script file,
+//and it also looks at svg code in the created bundled minified main.js file - js script file and converts it back to normal
+//svg code and it does both create and put the svg code into a setName.svg file (also creating the setName directory),
+//Then with the help of html-webpack-plugin plugin it adds an image tag linking to that newly created .svg file in the created bundled minified index.html file
+//which also has a script tag with a src attribute linking to the bundled minified main.js file - js script file,
+//and a link tag linking to the bundled minfied .css file.
+//To set up this rule literalJsObject, we need to have a property/key called "options" that holds a literalJsObject that sets the name
+//of the outputting .svg file and directory, we can add a content hash in the filename here if we like and
+//by using [ext] it use the file extension of the file we a creating from.(eg.[name].[hash].[ext]).
+//The file-loader loader is depreciated and it is replaced by the explcit/implcit asset modules rule,
+//therefore instead of file-loader loader rule, we can create a asset module rule instead, it will have a "type" property/key with
+//the value "asset/resource", which then requires us to
+//add into our "output" property/keys literalJsObj a property/key called "assetModuleFilename" with the value
+//"images/[name].[hash][ext]" or "images/[name].[hash][ext]"
+//in prod and dev webpack config js files - js module files respectivly
+//for it to create the .svg file and our requried directory.
+//Then with the help of html-webpack-plugin plugin it automatically adds in a img tag linking it the created .svg file in the created bundled minified index.html.
+//Also due to the asset modules rule being always implicitly added in webpack v5,
+//if we try to use file-loader loader rule on top of the implict asset modules rule
+//,we are required to ignore its output so that we dont get double output by adding in a "type" property/key with the value "javascript/auto" in our file-loader loader rule.
+//Also in that case for some reason we want the "esModule" property/key to be false in the "options" property/keys literalJsObject (ie use commonJs syntax ie module.export instead of ESModule syntax ie export default)
+//this seems to be realated to an issue that could be occuring when the svg file is converted to js for the created bundled minified main.js file - js script file,
+//and exporting it out to be convert back into the svg file.
+//For some reason it creates another svg file that points to the actual svg file,
+//and added in img tag in the created bundled minified index.html links to that svg file instead of the actual svg file,
+//this causes error due to the the svg file using a esmodule syntax instead of a commonjs syntax inside it to export the actual svg file.
+
+//webpack plugins -
+//Theses are thirdparty serverside js pluginWebApi libraries/modules/npm packages, they sometimes help a loader and other times do their
+//own thing.
+//They are Class's that are imported into a webpack config file - js module file that need to be instantiated (Sometimes passing in an options literalJsObj as
+//argument to its constructorMethod) and usually placed as a value inside a key/property called "plugins" that stores an arrayInstObject
+//or placed in the "optimization" property/key's literalJsObjects "minimizer" property/key's arrayInstObject.
+
+//plugin examples -
+//1.clean-webpack-plugin -
+//This plugin clears the dist directory or whatever directory the created bundle minified files are being outputted at at.
+//we set it up by instantiating the ClearWebpackPlugin Class and adding as value the ClearWebpackPluginInstObject into the "plugins" property/key's arrayInstObject.
+//This plugin is needed because of the use of content hash in the created bundle minified file filenames.
+//This plugin is now depreciated and instead we can use the new alternative way,
+//which is to add a "clean" property/key in the "output" property/keys literalJsObject and set it to true booleanInstObj, which does the
+//same things the clean-webpack-plugin plugin does.
+//2.terser-webpack-plugin -
+//This plugin is autotmatically intalled when webpack was installed, the purpose of this plugin is to minify the outputted [name].[contenthash].bundle.js - js script file,
+//it is a default plugin that is already invisibly present in the "optimization" property/key literalJsObjects "minimizer" property/key's arrayInstObject
+//if the "mode" property/key's value is set to "production",
+//and it does not need to be explcitly imported into our webpack config file - js module file,
+//but if we add other minmizer plugins as value into the "minimizer" property/keys arrayInstObjt,
+//it overwrites and removes the default invisble plugins present in it, therefore we would to need to explcitly import the Class for
+//the terser-webpack-plugin plugin and instatiante the TerserWebpackPlugin Class and add as value the TerserWebpackPluginInstObject
+//back into that arrayInstObject.
+//3.mini-css-extract-plugin-
+//This plugin has 2 purposes that go together, one is to get the alternative loader instead of the style-loader loader, this loader
+//is a static property called loader on the MiniCssExtractPlugin Class.(The purpose of this loader is explained in the loader section)
+//The other purpose is to create the bundle normal setName.css file with the css we extracted from the javascript, to do this
+//we are are required to instatiate the MiniCssExtractPlugin Class with a literalJsObject as argument
+//to the construtorMethod with a "filename" property/key with a value of "[name].[contenthash].bundle.css" for what
+//to call the created bundled normal defaultName.css file (note that we can choose to put [contenthash] in the filename here and the [name] here is the default name main)
+//and adding as value the created MiniCssExtractPluginInstObject into the "plugins" property/key's arrayInstObject.
+//We can also add in a property/key called "chunkFilename" with a value "chunk-[id].css" or "[name].[contenthash].bundle.css"
+//(The [name] in this cases will be a name that we set explcitly),
+//in the literalJsObject passed in as argument to the constructorMethod,this by itself will not do anything,but the purpose of
+//this is to seperate and prevent an asset from being part of  the created bundled file (in this case
+//the created bundled normal defaultName.css file) and instead create a seperate bundled file (in this case another
+//created bundled normal setName.css file) which allows us to be able to create multiple other
+//bundled files.
+//For this to work we need accompany it with adding a property/key called "splitChunks" that stores a literalJsObject into
+//the "optimization" propery/keyts literalJsObject,the "splitChunks" property/key
+//literalJsObject represents the default settings for the built in SplitChunksPlugin,which is the new alternative to the depreciated CommonsChunkPlugin,
+//It the "splitChunks" property/keys literalJsObject we add infromation that allow us to choose the file/files we want to use
+//when creating the seperate bundled file (in this case create seperate bundled normal setName.css file )
+//We have a few non ideal alternatives for the above functionality,
+//we can create a seperate bundled css files by adding a new entry point eg.other:"./src/other.js",
+//where that other.js - js module file contain's the import/imports to the scss or css files for the to be created seperate bundled defaultName.css file
+//or we directly let the entry point be "style": "./src/style.scss" and it would do the same thing.
+//Another alternative is to use a dynamic import/async import/imports in the
+//entry point index.js - js module file which would also give us the same result.
+//eg.import(/* webpackChunkName: "style" */ "./style.scss");
+//(This is the only other option from the above alternatives that use the "chunkFilename" property/key value
+//to set the name of the created bundled setName.css file,the other two will use the "filename" property/key,
+//which would lead to it having the defatul name main).
+//The issue with these alternatives is that all of them will also output a seperate empty bundled js file - js script file,
+//which we dont use.
+//4.optimize-css-assets-webpack-plugin -
+//This plugin is depreciated in webpack 5 so we use the new alternative css-minimizer-extract-plugin instead which does the same thing.
+//we use this plugin to make the bundled .css file (user-created clientside css library(ie style.css file)) we create to be a bundled
+//minified .css file.We dont put this plugin inside the "plugins" key/property,
+//instead we create a key/property called "optimization" that stores a literalJsObject and create a property/key called "minimizer"
+//that stores an arrayInstObj and add as value the optimizeCssAssetsWeboackPluginInstObject by instantiating the
+//the OptimizeCssAssetsWebpackPlugin Class in there.
+//This will cause an issue as we just overwrote the default values in "minimizer" propety/key,
+//therefore we need re add a pre existing plugin called terset-webpack-plugin that was used to minize the created bundled normal [name].[contenthash].bundle.js file -
+//js scripe file,therefore we will need to explictly require this thirdparty serverside js terser-webpack-plugin library/module/npm pacakge and
+//add the terserWebpackPluginInstObject as value by instatitate the TerserWebpackPlugin Class back into that arrayInstObject.
+//5.html-webpack-plugin -
+//This plugin has 2 purposese,
+//1 it allows us to create an template.html file in the src directory (which is sometimes automatically imported into the index.js file - js module file)
+//and it usese it to creates a bundled normal index.html file in the dist directory (ie webpack output directory) which
+//will contain img tag,link tag,scrip tags etc that link to other created bundled minified files.
+//This is done by adding the HTMLWebpackPluginInstObject as value in the arrayInstObject of the "plugins" property/key by instatiating
+//the HTMLWebpackInstObject Class and passing in an arguemnt literalJsObject into the constructorMethod,
+//that has a propert/key called "tempalte" with the value "./src/template.html" used to help find the tempalte.html file.
+//2 We can choose to make the created bundled index.html file be a minified version,
+//we do this by not putting the HTMLWebpackInstObject in the "plugins" property/key's arrayInstObjt,
+//but instead as done in No 4, inside the "optimization" property/key literalJsObjects
+//"minimizer" key/property's arrayInstObj, but we have to add in a few new properties/keys into the argument literalJsObj we passed into the construtorMethod,
+//called "removeAttatributeQuotes","collapseWhitespace","removeComments" all with the value true booleanInstObject.
+
+//Below are the diffrences between the webpack common,dev and prod config files - js module files -
+//webpack.common.config.js file - js module file -
+//This is usually a parent webpack config file that we dont usually use directly,
+//we write the things that need to be inherited in both the child dev and the prod config file prod in this common config file.
+//The default "mode" property/key is "production" if we dont set one explicitly.
+//webpack.dev.config.js file - js module file -
+//we set the "mode" property/key to "development" here - this automaitcally prevents the created bundle [name].bundled.js - js script file
+//from being a minified one which helps with readability and debugging.
+//we don't want any of the create bundle files to be the minfied version here as we want to be able to read it to debug it.
+//we prefer to not create some of the bundled files such as creating the bundled css file ,
+//instead we inject style tags with the css into the created bundled index.html file.
+//we dont add the content hash in the filenames here as it's purpose isnt utilized.
+//we don't need to clear the output directory dist due to lack of the content hash in the filenames here.
+//we add a "devtools" propety/key with value false to better read the created bundled js file - js script file
+//or set it to "inline-source-map" so that we dont create the minified map files but instead have all the source map information inside
+//the created bundled minfied js and css files.
+//This is the webpack config js file - js module file we use when running our webpack-dev-server where the created bundled files are
+//all outputted into the memory(virtual) directory.
+//webpack.prod.config.js file -
+//we set the "mode" property/key to be "production" here - making the created bunlded [name].[contenthash].bundle.js - js script file
+//to be be the minfied version.
+//we want all the created bundled files to be the minified version to reduce file size.
+//we create all the bundled minified files such as creating the bundled minified css file, since we are only building it once and makes the file retrival process seperated and quicker.
+//we add the content hash in the files names here as its purpose is utilized.
+//we wamt to clear the output directory dist due the content hash in the filenames creating diffrent version of a file if content is changed in the file ,which causes cluttering
+//in the output directory.
+
+//webpack-dev-server -
+//To use the webpack-dev-server server/webApi/app, we need to install the thirdparty serverside js webpack-dev-serverWebApi libraray/module/npm package
+//its purpose is to help us save time when developing, with automatic rebuilds and serving of the created bundled files.
+//We are required to already have installed the thirdparty serverside js webpackWebApi and webpack-cliWebApi libraray/module/npm package
+//as the thirdparty serverside js webpack-dev-serverWebApi libraray/module/npm package needs to use them.
+//we start the server by running the webpack serve cli command which finds the webpack-dev-server module in the node_modules
+//and exectues its index.js - js module file with node,we can also add in --config webpack.dev.js
+//to make it use the webpack.dev.js - js module file we made for it (by default it tries to find the webpack.config.js - js module file)
+//and --open to auto open the browser at the localhost port number the webpack-dev-server server/webApi/app is listning at/serving from.
+//it automatically runs the webpack cli command as well when exeucting the webpack serve cli command
+//We usually assign the webpack serve cli command as value to the "start" property/key in the package.json of the
+//thirdpary projectRootWebApi library/module/(not)npm package and run it using the cli command npm start
+//It serves its static assets from a public directory(which we did not create in this case), but in the webpack dev config file - js module file
+//we can change this directory by adding a property/key called "devServer" that stores a literalJsObject and adding a property/key called "static" that stores a literalJsObject
+//and adding a property/key called "directory" with a stringInstObject value of the abosulte path to the new prefered directory.
+//eg.directory: path.join(__dirname, "./"). ie projectRoot directory
+//we can also make webpack-dev-server serve these files in a diffrent absolute path prefix,
+//by adding the "publicPath" property/key as well and giving it an absolute path prefix value
+//eg. publicPath:"/publicRandom"
+//It serves the created bundled files from the memory(virtual) directory (which gets cleared on each rebuild)
+//This is the virtual dist directory therefore the "output" property/key literalJsObjects settings applies here as well. (refer back to content hash
+//in filenames section above)
+
+//Source maps -
+//This is the abilty of a user to see and debug the original file's in the src directory that was used to create the minfied bundled js script,css etc files
+//while inside the browser (ie we see the project root directory here with the npm package name) Eg.In chrome, we have chome dev tool section's source section
+//that will have the project root directory with the npm package name containing the src directory with all the original files.
+//We do this by setting a specfic source map type as stringInstObjt value in the webpack config file's "devtool" property/key.
+//The main idea is to create minified map files for each minifed bundled file,
+//where a minifed map file is like a json file containing information
+//used to retrive each orignial files of the src directory.
+//When the mode is production, we can choose to not have source maps at all with the value false, so the users cannot look at the original code in the browser, or
+//we can go with the most detailed option, which is value "source-map", this option will create multiple minfied map files for each of the
+//minifed bundled js script,css etc files, this is ideal for production as we build only once and we can retrive these files seperatly only when needed,
+//also making the created minfied bundled files smaller in size therefore quicker to load.
+//The created minfied map files are like a json file with information to retrive the resepective original file in the src directory of
+//each of their respective created minified bundled js script,css etc files,
+//so in each minifed bundled js script,css etc file , we will have a way to retrive this source map file,
+//eg./*# sourceMappingURL=main.6e9a941d81351439127b.bundle.css.map*/
+//# sourceMappingURL=main.77426b99f775dae06be2.bundle.js.map
+//but these are only retrived if we open the chrome dev tools source section.
+//The hash is known as pragma charecter, it is something that the browser recognizes when executivng cliet side js code,
+//which allows it to know when to send a GET request to retreive the minifed map file (ie opening the dev tools source section)
+//so that the project root directory with the oringal files can be create.
+//When the mode is development, it has a default value of "eval", we can change it to a more clearer option
+//that will show the original files in the src directory exactly as it was written by us,with the value
+//"inline-source-maps", unlike in production mode, we dont want to create the minifed map files, as buidling them would take time,
+//so instead we have all the respective source map information inside the bundled minfied js script,css file etc itself
+//and it gets used to retrive  each original files of the src directory,when we open the chrome dev tools sources section
+//Note - if we were using index.ts - ts module file entry point,
+//we would also need to set "sourceMap" property/key to be booleanInstObj true in the ts.config file for it to work.
+
+//Other information  -
+//Example of a project related global core module  -
+//we have a global variable called __dirname that holds value stringInstObj of the
+//absolute path to the current directory of the file using it (eg index.js or webpack.config.js),
+//This is a built-in serverside js __dirnameWebApi library/global core module.
+//it is usully used as first argument in a sync method of the pathWebApiLiteralJsObject,
+//which is a built-in serverside js pathWebApi library/non global core module ,
+//we use it like so, path.resolve(__dirname,"dist").
+
+//npm package module in the context of webpack -
+//The project root is usually seen as an npm package module ie user-created serverside js projectRootWebApi library/modules/npm package
+//but when using thirdparty serverside js webpack/webpack-cliWebApi library/module/npm package
+//or when using thirdparty serverside js webpack-dev-serverWebApi library/module/npm package,
+//we choose not to create an index.js file, but we do still create an explict package.json file for other configurations,
+//this is becasue what we are executing with node is a diffrent index.js file,
+//we specify this by setting up the "start" property/key in the package.json that exectues a cli command that exectues
+//the index.js file inside a module directory inside the node_modules directory for
+//on of the aformentioned thirdparty serverside js webApi libraries/modules/npm packages.
+//(ie instead of calling node index.js inside that specific npm package module)
+//we use the webpack command or the dev server command to execute their respective index.js files.
+//In this  case we dont want the project root to be an npm package module,
+//so we edit the package.json file accordingly,
+//since we dont have an index.js file,we remove the "main" key/property
+//we also set the "private" property/key to true to prevent it from being published as an npm package module.
+//The src directory we create is a npm package module ie user-created serverside js srcWebApi library/module/npm pacakge,
+//but in this case i like to think of it as a user-created clietside js srcWebApi library/module/npm pacakge.
+//It has an main file called index.js which does what a main file should do (ie becomes a js module file),
+//but we dont execute this with node
+//nor do we publish this npm package module to the node package manager library
+//we can choose to create an explict pacakge.json file if we like and and add the "private" property/key
+//and set it to true so its publishd as an npm package module.
+//The main purpose of this npm package module ie user-created clientside js srcWebApi library/mpdule/npm packages
+//main file, ie index.js (usually a js module file), is to help the thirdparty serverside js webpack/webpack-cliWebApi library/
+///module/npm pacakge or the thirdparty serverside js webpack-dev-serverWebApi library/module/npm pacakge
+//to find this main file, as that is what is set as the entry point in the webpack.config.js file we create in this
+//npm package module.
+//Important note - In this special case we are importing in user-created clientside js webApi libraries - js module files as well ontop of the previous mentioned
+//third party/user-created/inbuilt serverside js webApi libraries/modules/npm packages.
+
+//React and webpack -
+//If when wanting to use the react library,we choose to execute the thirdparty
+//serverside js create-react-appwebApi library/cli tool/module/npm package with npx create-react-app my-app to 
+//create the my-app directory,
+//it automatically installs the thirdparty serverside js webpack/webpack-cliWebApi library/module/npm package in it,
+//and it is implicitly used to create the bundled minified files when we use the npm run build cli command there.
